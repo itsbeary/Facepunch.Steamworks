@@ -2,44 +2,41 @@
 using System.Runtime.InteropServices;
 using Steamworks.Data;
 
-namespace Steamworks.Ugc
+namespace Steamworks.Ugc;
+
+internal struct SteamParamStringArray : IDisposable
 {
-	internal struct SteamParamStringArray : IDisposable
+	public SteamParamStringArray_t Value;
+
+	private IntPtr[] NativeStrings;
+	private IntPtr NativeArray;
+
+	public static SteamParamStringArray From( string[] array )
 	{
-		public SteamParamStringArray_t Value;
+		var a = new SteamParamStringArray();
 
-		IntPtr[] NativeStrings;
-		IntPtr NativeArray;
-
-		public static SteamParamStringArray From( string[] array )
+		a.NativeStrings = new IntPtr[array.Length];
+		for ( var i = 0; i < a.NativeStrings.Length; i++ )
 		{
-			var a = new SteamParamStringArray();
-
-			a.NativeStrings = new IntPtr[array.Length];
-			for ( int i = 0; i < a.NativeStrings.Length; i++ )
-			{
-				a.NativeStrings[i] = Marshal.StringToHGlobalAnsi( array[i] );
-			}
-
-			var size = Marshal.SizeOf( typeof( IntPtr ) ) * a.NativeStrings.Length;
-			a.NativeArray = Marshal.AllocHGlobal( size );
-			Marshal.Copy( a.NativeStrings, 0, a.NativeArray, a.NativeStrings.Length );
-
-			a.Value = new SteamParamStringArray_t
-			{
-				Strings = a.NativeArray,
-				NumStrings = array.Length
-			};
-
-			return a;			
+			a.NativeStrings[i] = Marshal.StringToHGlobalAnsi( array[i] );
 		}
 
-		public void Dispose()
-		{
-			foreach ( var x in NativeStrings )
-				Marshal.FreeHGlobal( x );
+		var size = Marshal.SizeOf( typeof(IntPtr) ) * a.NativeStrings.Length;
+		a.NativeArray = Marshal.AllocHGlobal( size );
+		Marshal.Copy( a.NativeStrings, 0, a.NativeArray, a.NativeStrings.Length );
 
-			Marshal.FreeHGlobal( NativeArray );
+		a.Value = new SteamParamStringArray_t { Strings = a.NativeArray, NumStrings = array.Length };
+
+		return a;
+	}
+
+	public void Dispose()
+	{
+		foreach ( var x in NativeStrings )
+		{
+			Marshal.FreeHGlobal( x );
 		}
+
+		Marshal.FreeHGlobal( NativeArray );
 	}
 }

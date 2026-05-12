@@ -1,28 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.IO;
 using Newtonsoft.Json;
 
-namespace Generator
+namespace Generator;
+
+internal class Program
 {
-    class Program
-    {
-		public static SteamApiDefinition Definitions;
+	public static SteamApiDefinition Definitions;
 
-		static void Main( string[] args )
-        {
-            var content = System.IO.File.ReadAllText( "steam_sdk/steam_api.json" );
-            var def = Newtonsoft.Json.JsonConvert.DeserializeObject<SteamApiDefinition>( content );
+	private static void Main( string[] args )
+	{
+		var content = File.ReadAllText( "steam_sdk/steam_api.json" );
+		var def = JsonConvert.DeserializeObject<SteamApiDefinition>( content );
 
-			Definitions = def;
+		Definitions = def;
 
-			var generator = new CodeWriter( def );
+		var generator = new CodeWriter( def );
 
-            generator.ToFolder( "../Facepunch.Steamworks/Generated/" );
-        }
-    }
+		generator.ToFolder( "../Facepunch.Steamworks/Generated/" );
+	}
 }
-
-

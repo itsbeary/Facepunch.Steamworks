@@ -1,30 +1,29 @@
 ﻿using System;
 
-namespace Steamworks
+namespace Steamworks;
+
+public class AuthTicket : IDisposable
 {
-	public class AuthTicket : IDisposable
+	public byte[] Data;
+	public uint Handle;
+
+	public void Dispose()
 	{
-		public byte[] Data;
-		public uint Handle;
+		Cancel();
+	}
 
-		/// <summary>
-		/// Cancels a ticket. 
-		/// You should cancel your ticket when you close the game or leave a server.
-		/// </summary>
-		public void Cancel()
+	/// <summary>
+	///     Cancels a ticket.
+	///     You should cancel your ticket when you close the game or leave a server.
+	/// </summary>
+	public void Cancel()
+	{
+		if ( Handle != 0 )
 		{
-			if ( Handle != 0 )
-			{
-				SteamUser.Internal.CancelAuthTicket( Handle );
-			}
-
-			Handle = 0;
-			Data = null;
+			SteamUser.Internal.CancelAuthTicket( Handle );
 		}
 
-		public void Dispose()
-		{
-			Cancel();
-		}
+		Handle = 0;
+		Data = null;
 	}
 }

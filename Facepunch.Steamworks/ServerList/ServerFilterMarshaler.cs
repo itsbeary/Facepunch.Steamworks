@@ -9,27 +9,26 @@ internal struct ServerFilterMarshaler : IDisposable
 	private static readonly int SizeOfPointer = Marshal.SizeOf<IntPtr>();
 	private static readonly int SizeOfKeyValuePair = Marshal.SizeOf<MatchMakingKeyValuePair>();
 
-	private IntPtr _arrayPtr;
 	private IntPtr _itemsPtr;
 
 	public int Count { get; private set; }
-	public IntPtr Pointer => _arrayPtr;
+	public IntPtr Pointer { get; private set; }
 
 	public ServerFilterMarshaler( MatchMakingKeyValuePair[] filters )
 	{
 		if ( filters == null || filters.Length == 0 )
 		{
 			Count = 0;
-			_arrayPtr = IntPtr.Zero;
+			Pointer = IntPtr.Zero;
 			_itemsPtr = IntPtr.Zero;
 			return;
 		}
 
 		Count = filters.Length;
-		_arrayPtr = Marshal.AllocHGlobal( SizeOfPointer * filters.Length );
+		Pointer = Marshal.AllocHGlobal( SizeOfPointer * filters.Length );
 		_itemsPtr = Marshal.AllocHGlobal( SizeOfKeyValuePair * filters.Length );
 
-		var arrayDst = _arrayPtr;
+		var arrayDst = Pointer;
 		var itemDst = _itemsPtr;
 		foreach ( var filter in filters )
 		{
@@ -43,10 +42,10 @@ internal struct ServerFilterMarshaler : IDisposable
 
 	public void Dispose()
 	{
-		if ( _arrayPtr != IntPtr.Zero )
+		if ( Pointer != IntPtr.Zero )
 		{
-			Marshal.FreeHGlobal( _arrayPtr );
-			_arrayPtr = IntPtr.Zero;
+			Marshal.FreeHGlobal( Pointer );
+			Pointer = IntPtr.Zero;
 		}
 
 		if ( _itemsPtr != IntPtr.Zero )

@@ -1,24 +1,29 @@
 ﻿using System;
 
-namespace Steamworks
+namespace Steamworks;
+
+internal static class Epoch
 {
-	static internal class Epoch
+	private static readonly DateTime epoch = new(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+
+	/// <summary>
+	///     Returns the current Unix Epoch
+	/// </summary>
+	public static int Current => (int)DateTime.UtcNow.Subtract( epoch ).TotalSeconds;
+
+	/// <summary>
+	///     Convert an epoch to a datetime
+	/// </summary>
+	public static DateTime ToDateTime( decimal unixTime )
 	{
-		private static readonly DateTime epoch = new DateTime( 1970, 1, 1, 0, 0, 0, DateTimeKind.Utc );
+		return epoch.AddSeconds( (long)unixTime );
+	}
 
-		/// <summary>
-		/// Returns the current Unix Epoch
-		/// </summary>
-		public static int Current => (int)(DateTime.UtcNow.Subtract( epoch ).TotalSeconds);
-
-		/// <summary>
-		/// Convert an epoch to a datetime
-		/// </summary>
-		public static DateTime ToDateTime( decimal unixTime ) => epoch.AddSeconds( (long)unixTime );
-
-		/// <summary>
-		/// Convert a DateTime to a unix time
-		/// </summary>
-		public static uint FromDateTime( DateTime dt ) => (uint)(dt.Subtract( epoch ).TotalSeconds);
+	/// <summary>
+	///     Convert a DateTime to a unix time
+	/// </summary>
+	public static uint FromDateTime( DateTime dt )
+	{
+		return (uint)dt.Subtract( epoch ).TotalSeconds;
 	}
 }

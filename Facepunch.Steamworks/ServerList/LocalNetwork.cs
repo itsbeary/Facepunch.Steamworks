@@ -1,12 +1,11 @@
 ﻿using System;
 
-namespace Steamworks.ServerList
+namespace Steamworks.ServerList;
+
+public class LocalNetwork : Base
 {
-	public class LocalNetwork : Base
+	internal override void LaunchQuery()
 	{
-		internal override void LaunchQuery()
-		{
-			request = Internal.RequestLANServerList( AppId.Value, IntPtr.Zero );
-		}
+		request = Internal.RequestLANServerList( AppId.Value, IntPtr.Zero );
 	}
 }
